@@ -1,0 +1,17 @@
+{
+	"name": "Create External Data Source",
+	"properties": {
+		"content": {
+			"query": "use filter\nGO\n\ncreate master key ENCRYPTION by password = 'Hello@123'\n\ncreate database scoped credential sqlondemand\nwith identity = 'SHARED ACCESS SIGNATURE',\nSECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2024-03-05T23:14:17Z&st=2024-03-05T15:14:17Z&spr=https,http&sig=YFXP29cq%2Bq1PFrQcsQjtGN8ERJ%2BIbzG1gsnPAkLXpBo%3D'\n\ncreate external data source  sqlondatalake \nWITH(\n    LOCATION = 'https://dbdatalakestore2.blob.core.windows.net/',\n    CREDENTIAL = sqlondemand\n)",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "filter",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
