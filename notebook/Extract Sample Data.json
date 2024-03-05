@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a7f9612f-5713-4884-bd84-f27e8eb476d9"
+				"spark.autotune.trackingId": "7622b812-af6a-4879-b747-6adcf1ad6be6"
 			}
 		},
 		"metadata": {
@@ -84,24 +84,6 @@
 						"transient": {
 							"deleting": false
 						}
-					}
-				},
-				"source": [
-					"df.write.format('csv').saveAsTable('history')"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					},
 					"microsoft": {
 						"language": "python"
@@ -114,24 +96,6 @@
 					"display(df)"
 				],
 				"execution_count": 7
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"spark.sql('create database order_history')"
-				],
-				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
