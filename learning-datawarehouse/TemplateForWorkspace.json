@@ -22,6 +22,55 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/NoteBook_Pipeline')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Extensive_Notebook",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "Extract Sample Data",
+								"type": "NotebookReference"
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "sparksample",
+								"type": "BigDataPoolReference"
+							},
+							"executorSize": "Small",
+							"conf": {
+								"spark.dynamicAllocation.enabled": true,
+								"spark.dynamicAllocation.minExecutors": 3,
+								"spark.dynamicAllocation.maxExecutors": 3
+							},
+							"driverSize": "Small",
+							"numExecutors": 3
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/notebooks/Extract Sample Data')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/sparksample')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/learning-datawarehouse-WorkspaceDefaultSqlServer')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -119,7 +168,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-- This is auto-generated code\nSELECT\n    TOP 10 *\nFROM\n    OPENROWSET(\n        BULK 'https://datalakeservice.dfs.core.windows.net/dataload/Results.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = True,\n        PARSER_VERSION = '2.0'\n    ) AS [result]",
+					"query": "SELECT TOP 100 *\nfrom \n    OPENROWSET(\n        BULK 'abfss://dataload@datalakeservice.dfs.core.windows.net/History/ParquetFile/part-00000-37f2aa87-14a5-4a41-a17f-0f01bbe084ad-c000.snappy.parquet'\n        ,FORMAT = 'PARQUET'\n        \n    ) AS [Result]",
 					"metadata": {
 						"language": "sql"
 					},
@@ -154,7 +203,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "53562b62-4de3-4566-9a99-0d203bca3afb"
+						"spark.autotune.trackingId": "e3edf844-cda8-4f24-84de-a6941308b1b9"
 					}
 				},
 				"metadata": {
@@ -179,20 +228,18 @@
 						"sparkVersion": "3.3",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df = spark.read.option('header',True).csv('abfss://dataload@datalakeservice.dfs.core.windows.net/Results.csv')"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 12
 					},
 					{
 						"cell_type": "code",
@@ -209,25 +256,6 @@
 						},
 						"source": [
 							"display(df)"
-						],
-						"outputs": [],
-						"execution_count": null
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"df.write.format('csv').saveAsTable('history')"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -255,7 +283,7 @@
 							"display(df)"
 						],
 						"outputs": [],
-						"execution_count": 14
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -271,30 +299,11 @@
 							}
 						},
 						"source": [
-							"spark.sql('create database order_history')"
+							"df.repartition(1).write.mode('overwrite').csv('/History/CSVFile')\r\n",
+							"df.repartition(1).write.mode('overwrite').parquet('/History/ParquetFile')"
 						],
 						"outputs": [],
-						"execution_count": 15
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"df.write.mode('append').csv('/History/CSVFile')\r\n",
-							"df.write.mode('append').parquet('/History/ParquetFile')"
-						],
-						"outputs": [],
-						"execution_count": 5
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -325,16 +334,16 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"autoPause": {
-					"enabled": true,
+					"enabled": false,
 					"delayInMinutes": 15
 				},
 				"autoScale": {
 					"enabled": true,
-					"maxNodeCount": 3,
+					"maxNodeCount": 5,
 					"minNodeCount": 3
 				},
 				"nodeCount": 10,
-				"nodeSize": "Small",
+				"nodeSize": "Medium",
 				"nodeSizeFamily": "MemoryOptimized",
 				"sparkVersion": "3.3",
 				"isComputeIsolationEnabled": false,
