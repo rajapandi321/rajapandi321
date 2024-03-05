@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a03c5285-6af5-4488-8504-5b617a08f8df"
+				"spark.autotune.trackingId": "a7f9612f-5713-4884-bd84-f27e8eb476d9"
 			}
 		},
 		"metadata": {
@@ -41,8 +41,8 @@
 				},
 				"sparkVersion": "3.3",
 				"nodeCount": 10,
-				"cores": 4,
-				"memory": 28,
+				"cores": 8,
+				"memory": 56,
 				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
@@ -113,7 +113,7 @@
 					"df = spark.sql(\"select * from default.history\")\r\n",
 					"display(df)"
 				],
-				"execution_count": 14
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -147,10 +147,10 @@
 					}
 				},
 				"source": [
-					"df.write.mode('append').csv('/History/CSVFile')\r\n",
-					"df.write.mode('append').parquet('/History/ParquetFile')"
+					"df.repartition(1).write.mode('overwrite').csv('/History/CSVFile')\r\n",
+					"df.repartition(1).write.mode('overwrite').parquet('/History/ParquetFile')"
 				],
-				"execution_count": 5
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
