@@ -114,6 +114,37 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/New_Schedule')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "NoteBook_Pipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 6,
+						"startTime": "2024-03-06T08:13:00",
+						"endTime": "2024-03-06T08:13:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/NoteBook_Pipeline')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
 			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
 			"apiVersion": "2019-06-01-preview",
@@ -352,6 +383,38 @@
 			},
 			"dependsOn": [],
 			"location": "eastus2"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/newanalyticsworkspace')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus2"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Create External Data Source')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "use filter\nGO\n\ncreate master key ENCRYPTION by password = 'Hello@123'\n\ncreate database scoped credential sqlondemand\nwith identity = 'SHARED ACCESS SIGNATURE',\nSECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2024-03-05T23:14:17Z&st=2024-03-05T15:14:17Z&spr=https,http&sig=YFXP29cq%2Bq1PFrQcsQjtGN8ERJ%2BIbzG1gsnPAkLXpBo%3D'\n\ncreate external data source  sqlondatalake \nWITH(\n    LOCATION = 'https://dbdatalakestore2.blob.core.windows.net/',\n    CREDENTIAL = sqlondemand\n)",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "filter",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
 		}
 	]
 }
