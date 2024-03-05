@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c75cfa99-905d-4c60-86fd-aae161c31834"
+				"spark.autotune.trackingId": "a03c5285-6af5-4488-8504-5b617a08f8df"
 			}
 		},
 		"metadata": {
@@ -147,9 +147,10 @@
 					}
 				},
 				"source": [
-					"spark.sql('create table history_replic like default.history')"
+					"df.write.mode('append').csv('/History/CSVFile')\r\n",
+					"df.write.mode('append').parquet('/History/ParquetFile')"
 				],
-				"execution_count": 3
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
