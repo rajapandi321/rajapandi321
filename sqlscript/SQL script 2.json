@@ -2,7 +2,7 @@
 	"name": "SQL script 2",
 	"properties": {
 		"content": {
-			"query": "-- This is auto-generated code\nSELECT\n    TOP 10 *\nFROM\n    OPENROWSET(\n        BULK 'https://datalakeservice.dfs.core.windows.net/dataload/Results.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = True,\n        PARSER_VERSION = '2.0'\n    ) AS [result]",
+			"query": "SELECT TOP 100 *\nfrom \n    OPENROWSET(\n        BULK 'abfss://dataload@datalakeservice.dfs.core.windows.net/History/ParquetFile/part-00000-37f2aa87-14a5-4a41-a17f-0f01bbe084ad-c000.snappy.parquet'\n        ,FORMAT = 'PARQUET'\n        \n    ) AS [Result]",
 			"metadata": {
 				"language": "sql"
 			},
