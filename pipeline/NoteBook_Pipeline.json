@@ -1,0 +1,40 @@
+{
+	"name": "NoteBook_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Extensive_Notebook",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Extract Sample Data",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "sparksample",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": true,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 5
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			}
+		],
+		"annotations": []
+	}
+}
