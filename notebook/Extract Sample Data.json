@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7622b812-af6a-4879-b747-6adcf1ad6be6"
+				"spark.autotune.trackingId": "e3edf844-cda8-4f24-84de-a6941308b1b9"
 			}
 		},
 		"metadata": {
@@ -53,7 +53,7 @@
 				"source": [
 					"df = spark.read.option('header',True).csv('abfss://dataload@datalakeservice.dfs.core.windows.net/Results.csv')"
 				],
-				"execution_count": null
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -95,7 +95,7 @@
 					"df = spark.sql(\"select * from default.history\")\r\n",
 					"display(df)"
 				],
-				"execution_count": 7
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -114,7 +114,7 @@
 					"df.repartition(1).write.mode('overwrite').csv('/History/CSVFile')\r\n",
 					"df.repartition(1).write.mode('overwrite').parquet('/History/ParquetFile')"
 				],
-				"execution_count": 9
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
