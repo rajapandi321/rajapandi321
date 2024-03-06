@@ -119,7 +119,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -174,17 +174,37 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Fetch Sample Query')]",
+			"name": "[concat(parameters('workspaceName'), '/CTAS_Dedicated_SQL_Pool')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "SELECT TOP 10 *\nFROM OPENROWSET(\n    BULK 'https://datalakeservice.dfs.core.windows.net/dataload/Results.csv',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE -- Assuming the first row is a header\n) AS [Result]\n\n",
+					"query": "create table score(id int, name varchar(20), age int);\n\ninsert into score values(1,'Raju',21)\ninsert into score values(2,'Hari',23);\ninsert into score values(3,'Vignesh',24);\n\nselect * from score;\n\n\n\n\nCREATE TABLE [dbo].[score_value]\nWITH (\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT *\nFROM [dbo].[score];\n",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
-						"databaseName": "master",
+						"databaseName": "newanalyticsworkspace",
+						"poolName": "newanalyticsworkspace"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Create External Data Source')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "use filter\nGO\n\ncreate master key ENCRYPTION by password = 'Hello@123'\n\ncreate database scoped credential sqlondemand\nwith identity = 'SHARED ACCESS SIGNATURE',\nSECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2024-03-05T23:14:17Z&st=2024-03-05T15:14:17Z&spr=https,http&sig=YFXP29cq%2Bq1PFrQcsQjtGN8ERJ%2BIbzG1gsnPAkLXpBo%3D'\n\ncreate external data source  sqlondatalake \nWITH(\n    LOCATION = 'https://dbdatalakestore2.blob.core.windows.net/',\n    CREDENTIAL = sqlondemand\n)",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "filter",
 						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
@@ -194,12 +214,32 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"name": "[concat(parameters('workspaceName'), '/Creation of External Table')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "SELECT TOP 100 *\nfrom \n    OPENROWSET(\n        BULK 'abfss://dataload@datalakeservice.dfs.core.windows.net/History/ParquetFile/part-00000-37f2aa87-14a5-4a41-a17f-0f01bbe084ad-c000.snappy.parquet'\n        ,FORMAT = 'PARQUET'\n        \n    ) AS [Result]",
+					"query": "--create a database\ncreate database analyticDB\n\n--collate used to encode the string values to UTF8\ncollate Latin1_General_100_Bin2_UTF8\n\nuse analyticDB\nGO\n\n--Creation of master key\ncreate master key encryption by password = 'Raju@321'\n\n--Creating a Scoped Credential\ncreate database scoped credential sastokengrant\nwith IDENTITY = 'SHARED ACCESS SIGNATURE',\nSECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2024-03-07T14:11:51Z&st=2024-03-06T06:11:51Z&spr=https,http&sig=roZzot%2FVE98DZ8MzNmZQZYRS9wZJxom2HF%2BCy5kugrw%3D'\n\n--creation of external Datasource\ncreate external data source datalakesource1\nWITH(\n    LOCATION = 'https://dbdatalakestore2.blob.core.windows.net/',\n    CREDENTIAL = sastokengrant\n)\n\n--creation of external file format\ncreate external file format csvfileformat1\nWITH(\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS  (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"'\n        FIRST_ROW = 2,\n        USE_TYPE_DEFAULT = TRUE\n    )\n)\n\n--creating a new schema for the table\ncreate schema newanalytic\n\n--creation of external table\nCREATE EXTERNAL TABLE newanalytic.car_data\nWITH(\n    LOCATION = 'upload-files/History/CarSales',\n    DATA_SOURCE = datalakesource1,\n    FILE_FORMAT = csvfileformat1\n) \nAS \nSelect car_id, Gender, Company \nfrom \n    OPENROWSET(\n        BULK 'https://dbdatalakestore2.blob.core.windows.net/upload-files/Car_Sales.csv',\n        FORMAT = 'csv',\n        FIRSTROW = 2\n    ) WITH (\n        car_id int,\n        Gender varchar(20),\n        Company varchar(20)\n    )as [Result]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "analyticDB",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Fetch Sample Query')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT TOP 10 *\nFROM OPENROWSET(\n    BULK 'https://datalakeservice.dfs.core.windows.net/dataload/Results.csv',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE -- Assuming the first row is a header\n) AS [Result]\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -395,26 +435,6 @@
 			},
 			"dependsOn": [],
 			"location": "eastus2"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Create External Data Source')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "use filter\nGO\n\ncreate master key ENCRYPTION by password = 'Hello@123'\n\ncreate database scoped credential sqlondemand\nwith identity = 'SHARED ACCESS SIGNATURE',\nSECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2024-03-05T23:14:17Z&st=2024-03-05T15:14:17Z&spr=https,http&sig=YFXP29cq%2Bq1PFrQcsQjtGN8ERJ%2BIbzG1gsnPAkLXpBo%3D'\n\ncreate external data source  sqlondatalake \nWITH(\n    LOCATION = 'https://dbdatalakestore2.blob.core.windows.net/',\n    CREDENTIAL = sqlondemand\n)",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "filter",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
 		}
 	]
 }
