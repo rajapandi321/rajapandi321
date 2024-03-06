@@ -1,0 +1,17 @@
+{
+	"name": "Creation of External Table",
+	"properties": {
+		"content": {
+			"query": "--create a database\ncreate database analyticDB\n\n--collate used to encode the string values to UTF8\ncollate Latin1_General_100_Bin2_UTF8\n\nuse analyticDB\nGO\n\n--Creation of master key\ncreate master key encryption by password = 'Raju@321'\n\n--Creating a Scoped Credential\ncreate database scoped credential ManagedIdentity\nwith IDENTITY = 'Managed Identity'\n\n--creation of Datasource\ncreate external data source datalakesource\nWITH(\n    LOCATION = 'https://dbdatalakestore2.blob.core.windows.net/',\n    CREDENTIAL = ManagedIdentity\n)\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "analyticDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
