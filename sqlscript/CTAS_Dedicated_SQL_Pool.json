@@ -1,0 +1,17 @@
+{
+	"name": "CTAS_Dedicated_SQL_Pool",
+	"properties": {
+		"content": {
+			"query": "create table score(id int, name varchar(20), age int);\n\ninsert into score values(1,'Raju',21)\ninsert into score values(2,'Hari',23);\ninsert into score values(3,'Vignesh',24);\n\nselect * from score;\n\n\n\ncreate schema main;\n\nCREATE TABLE [dbo].[score_value]\nWITH (\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT *\nFROM [dbo].[score];\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "newanalyticsworkspace",
+				"poolName": "newanalyticsworkspace"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
