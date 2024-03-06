@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "thangaramanujan-synapse"
+		},
+		"learning-datawarehouse-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:learning-datawarehouse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"thangaramanujan-synapse-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:thangaramanujan-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"learning-datawarehouse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://datalakeservice.dfs.core.windows.net"
+		},
+		"thangaramanujan-synapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://thangagen2.dfs.core.windows.net"
+		}
+	}
+}
